@@ -5,22 +5,29 @@ var level=0;
 
 
 function nextSequence(){
+    level++;
     var randomNumber= Math.floor(Math.random()*4);
     var randomChosenColour=buttonColours[randomNumber];
     gamePattern.push(randomChosenColour);
     playSound(randomChosenColour);  
     $("h1").text("level " +level);
-    level++;
+    
 }
 
 $(".btn").click(function(){
     var userChosenColour= $(this).attr("id");
-    playSound(userChosenColour);
+    var lastColour= userClickedPattern.length -1;
     userClickedPattern.push(userChosenColour);
-    
     animatePress(userChosenColour);
-    var lastColour= userClickedPattern.length -1
-    checkAnswers(lastColour);
+    if(checkAnswer(lastColour)){
+        playSound(userChosenColour);
+    }else{
+        playSound("wrong");
+    }
+    
+    
+   
+    
     
 
 });
@@ -47,7 +54,11 @@ function playSound(name){
             var yellowAudio=new Audio("./sounds/yellow.mp3");
             yellowAudio.play();
             break;
-        default: console.log(randomChosenColour);
+        case "wrong":
+            var wrongAudio= new Audio("./sounds/wrong.mp3");
+            wrongAudio.play();
+            break;
+        
     }  
 
 }
@@ -59,25 +70,79 @@ function animatePress(currentColour){
         }, 100);
 
 }
+
 $("html").on("keypress", function(){
     
     $("h1").text("press A to start");
     nextSequence();
     
 })
+function checkAnswer(lastColour){
+    var lastColour= userClickedPattern.length -1
+    if(userClickedPattern[lastColour] !== gamePattern[lastColour]){
+        playSound("wrong");
+
+        $("#level-title").text("Game Over");
+        $("body").addClass("game-over");
+        var wrongAudio= new Audio("./sounds/wrong.mp3");
+        wrongAudio.play();
+        setTimeout(function(){
+            $("body").removeClass("game-over");
+            userClickedPattern = [];
+            gamePattern = [];
+            level = 0;
+            $("#level-title").text("Press A to start");
+            }, 500);
+            return false;
+            }
+            else{
+                if(userClickedPattern.length === gamePattern.length){
+                    setTimeout(function(){
+                        nextSequence();
+                    }, 1000);
+                }
+                return true;
+                }
+}
+
+// function checkAnswer(lastColor) {
+//     if (userClickedPattern[lastColor] === gamePattern[lastColor]) {
+//       console.log("Success!");
+//       if (userClickedPattern.length === gamePattern.length) {
+//         setTimeOut (function() {
+//           nextSequence();
+//         }, 1000);
+//       } else {
+//         console.log("Wrong");
+//       }
+//     }
+//   };
+
 
 // function checkAnswers(currentLevel){
-//     if(userClickedPattern[currentLevel] === gamePattern[currentLevel]){
-//         for(var i=0;i<gamePattern.length;i++){
-//             if(userClickedPattern[i] === gamePattern[i]){
-//                 continue;
-
+//     var x=0;
+//     while(x<gamePattern.length){
+//         if(gamePattern[x]===userClickedPattern[x]){
+//             x++;
 //             }
-            
-//         }
-//         console.log("success");
-//     }else{
-//         console.log("fail");
+//             else{
+//                 alert("Game Over");
+//                 gamePattern=[];
+//                 return false;
+//             }
 //     }
+//     return true;
+    // if(userClickedPattern[currentLevel] === gamePattern[currentLevel]){
+    //     for(var i=0;i<gamePattern.length;i++){
+    //         if(userClickedPattern[i] === gamePattern[i]){
+    //             continue;
 
-// }
+    //         }
+            
+    //     }
+    //     console.log("success");
+    // }else{
+    //     console.log("fail");
+    // }
+
+//}
