@@ -19,10 +19,13 @@ function nextSequence(){
 
 $(".btn").click(function(){
     var userChosenColour= $(this).attr("id");
-    var lastColour= userClickedPattern.length -1;
+
     userClickedPattern.push(userChosenColour);
-    animatePress(userChosenColour);
+    lastColour=userClickedPattern.length -1;
+
     playSound(userChosenColour);
+    animatePress(userChosenColour);
+    
     checkAnswer(lastColour);
 });
 
@@ -71,32 +74,49 @@ $("html").on("keypress", function(){
         nextSequence();
         started=true;
     }
-})
+});
 
 function checkAnswer(lastColour){
-    if(userClickedPattern[lastColour] !== gamePattern[lastColour]){
+    if(gamePattern[lastColour]===userClickedPattern[lastColour]){
+        if(userClickedPattern.length === gamePattern.length){
+            setTimeout(function(){
+                nextSequence();
+            }, 1000);
+        }
+    }else{
         playSound("wrong");
-        $("#level-title").text("Game Over, press any key to restart");
         $("body").addClass("game-over");
-
+        $("#level-title").text("Game Over, press any key to restart");
         setTimeout(function(){
             $("body").removeClass("game-over");
-        }, 500);
+        }, 200);
 
         startOver();
-    }else{
-        if(gamePattern[lastColour]===userClickedPattern[lastColour]){
-            if(userClickedPattern.length === gamePattern.length){
-                setTimeout(function(){
-                    nextSequence();
-                }, 1000);
-            }
-        }
+
     }
+    // if(userClickedPattern[lastColour] !== gamePattern[lastColour]){
+    //     playSound("wrong");
+    //     $("#level-title").text("Game Over, press any key to restart");
+    //     $("body").addClass("game-over");
+
+    //     setTimeout(function(){
+    //         $("body").removeClass("game-over");
+    //     }, 500);
+
+    //     startOver();
+    // }else{
+    //     if(gamePattern[lastColour]===userClickedPattern[lastColour]){
+    //         if(userClickedPattern.length === gamePattern.length){
+    //             setTimeout(function(){
+    //                 nextSequence();
+    //             }, 1000);
+    //         }
+    //     }
+    // }
 }
 
 function startOver(){
-    userClickedPattern = [];
+    started=false;
     gamePattern = [];
     level = 0;
 }
